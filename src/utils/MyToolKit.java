@@ -477,7 +477,7 @@ public class MyToolKit {
 		IO.writeMap(idValueMap, seperater, writer);
 		writer.close();
 	}
-	
+
 	public static List<Double> cptItemsAvgVec(String[] items,Map<String,List<Double>> keyVecMap)
 	{
 		List<String> itemList=new ArrayList<String>();
@@ -490,38 +490,114 @@ public class MyToolKit {
 	public static List<Double> cptItemsAvgVec(List<String> items,Map<String,List<Double>> keyVecMap)
 	{
 		List<Double> avgvec=new ArrayList<Double>();
-		int count=0;
-		for(String item:items)
+		if(items!=null){
+			int count=0;
+			for(String item:items)
+			{
+				List<Double> vec=keyVecMap.get(item);
+				if(vec==null)
+				{
+					continue;
+				}
+				for(int i=0;i<vec.size();++i)
+				{
+					if(avgvec.size()<(i+1))
+					{
+						avgvec.add(vec.get(i));
+					}
+					else
+					{
+
+						avgvec.set(i, avgvec.get(i)+vec.get(i));
+					}
+				}
+				count++;
+			}
+
+			for(int i=0;i<avgvec.size();++i)
+			{
+				avgvec.set(i, avgvec.get(i)/count);
+			}
+		}
+		return avgvec;
+
+	}
+	public static List<List<String>> foldArrays(String[] arrys,int foldEleNum){
+		List<List<String>> folds=new ArrayList<List<String>>();
+		int completeFilledFoldNum=arrys.length/foldEleNum;
+		int k=0;
+		for(int i=0;i<arrys.length;++i){
+			if(k<=completeFilledFoldNum&&i<k*foldEleNum){
+				List<String> fold=folds.get(k-1);
+				fold.add(arrys[i]);
+			}
+			if(k<=completeFilledFoldNum&&i==k*foldEleNum){
+				List<String> fold=new ArrayList<String>();
+				fold.add(arrys[i]);
+				folds.add(fold);
+				++k;
+			}
+			if(k>completeFilledFoldNum&&i!=(k-1)*foldEleNum){
+				List<String> fold=folds.get(k-1);
+				fold.add(arrys[i]);
+			}
+		}
+		return folds;
+	}
+
+	public static void mergeFilesForFileFoldDir(String pFileFoldDir,String subDir,String destFileFoldDir) throws Exception
+	{
+		File pFFoldDir=new File(pFileFoldDir);
+		File[] pFFolds=pFFoldDir.listFiles();
+		for(File pffold:pFFolds)
 		{
-			List<Double> vec=keyVecMap.get(item);
-			if(vec==null)
+			String dirStr=pffold.getAbsolutePath()+"\\"+subDir;
+			File dir=new File(dirStr);
+			File[] fs=dir.listFiles();
+			for(File f:fs)
+			{
+				FileTool.copyFile2Dir(f.getAbsolutePath(), destFileFoldDir);
+			}
+		}
+
+	}
+	public static void extractSelectedKeyItems(Set<String> selectedSet,String allKeyIems,String keyItemsSeperater,
+			String dest) throws IOException
+	{
+		Set<String> haveWriteKeySet=new HashSet<String>();
+		BufferedReader reader=FileTool.getBufferedReaderFromFile(allKeyIems);
+		PrintWriter writer=FileTool.getPrintWriterForFile(dest);
+		String line="";
+		while((line=reader.readLine())!=null)
+		{
+			if(line.equals(""))
 			{
 				continue;
 			}
-			for(int i=0;i<vec.size();++i)
+			String[] elms=line.split(keyItemsSeperater, 2);
+			String key=elms[0].trim();
+			if(selectedSet.contains(key))
 			{
-				if(avgvec.size()<(i+1))
+				if(!haveWriteKeySet.contains(key))
 				{
-					avgvec.add(vec.get(i));
-				}
-				else
-				{
-					
-					avgvec.set(i, avgvec.get(i)+vec.get(i));
+					haveWriteKeySet.add(key);
+					writer.write(line+"\r\n");
 				}
 			}
-			count++;
+			if(selectedSet.size()==haveWriteKeySet.size())
+			{
+				System.out.println("complete sel "+haveWriteKeySet.size()+" id line");
+				break;	
+			}	
 		}
-		
-		for(int i=0;i<avgvec.size();++i)
-		{
-			avgvec.set(i, avgvec.get(i)/count);
-		}
-		
-		return avgvec;
-		
+		writer.close();
 	}
-	
+
+	//	public static void mergeFilesForFileFold(String fileFoldPath,String destMergeFiles)
+	//	{
+	//		
+	//	}
+
 
 	public static void main(String [] args) throws IOException{
 		//getTypeNum("F:/ExpData/DataFromOther/qty/Data4Tritrain/IMDB_Freq_DataTextTf.txt","\\s{1,}");
@@ -529,18 +605,18 @@ public class MyToolKit {
 		//System.out.println(max(1,5,1));
 		//		System.out.println(getMaxItemNumInPosElm("E:\\ExpData\\source\\nne\\publicInfo\\Tag-friVec\\idFridsReview.txt","\t\t"
 		//				              ,3,"\t"));
-//		Map<String,List<Double>> kvm=new HashMap<String,List<Double>>();
-//		List<Double> v1=new ArrayList<Double>();v1.add(1.0);v1.add(2.0);
-//		List<Double> v2=new ArrayList<Double>();v2.add(3.0);v2.add(4.0);
-//		List<Double> v3=new ArrayList<Double>();v3.add(5.0);v3.add(5.0);
-//		List<Double> v4=new ArrayList<Double>();v4.add(6.0);v4.add(7.0);
-//		kvm.put("1", v1);
-//		kvm.put("2", v2);
-//		kvm.put("3", v3);
-//		kvm.put("4", v4);
-//		List<String> is=new ArrayList<String>();
-//		is.add("1");is.add("2");
-//		List<Double> av=cptItemsAvgVec(is,kvm);
-//		System.out.println("hl");
+		//		Map<String,List<Double>> kvm=new HashMap<String,List<Double>>();
+		//		List<Double> v1=new ArrayList<Double>();v1.add(1.0);v1.add(2.0);
+		//		List<Double> v2=new ArrayList<Double>();v2.add(3.0);v2.add(4.0);
+		//		List<Double> v3=new ArrayList<Double>();v3.add(5.0);v3.add(5.0);
+		//		List<Double> v4=new ArrayList<Double>();v4.add(6.0);v4.add(7.0);
+		//		kvm.put("1", v1);
+		//		kvm.put("2", v2);
+		//		kvm.put("3", v3);
+		//		kvm.put("4", v4);
+		//		List<String> is=new ArrayList<String>();
+		//		is.add("1");is.add("2");
+		//		List<Double> av=cptItemsAvgVec(is,kvm);
+		//		System.out.println("hl");
 	}
 }

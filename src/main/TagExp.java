@@ -212,8 +212,8 @@ public class TagExp {
 	public static void generateUidFrisReview() throws IOException{
 		String base="F:\\ExpData\\DataIntegate\\source\\nne\\zps-400-expset\\extract\\selFtagNum3_-1\\";
 		String idcate=base+"idCate.txt";
-		String uidFriIds=base+"uid_fids.txt";
-		String dest=base+"idFrisReview.txt";
+		String uidFriIds=base+"idFris_sort_forW2v.txt";
+		String dest=base+"idFrisReview_sort.txt";
 		ExtractData.generateUidItemsReviews(uidFriIds, "\t", idcate, "\t", dest);
 	}
 
@@ -373,11 +373,11 @@ public class TagExp {
 	public static void generateAvgItemFeatureForSVM() throws IOException
 	{
 		String base="F:\\ExpData\\DataIntegate\\source\\nne\\zps-400-expset\\extract\\selFtagNum3_-1\\";
-		String expName="simTp50(id_avgT)\\tag(Tm.xId_avgT)";
+		String expName="id_w2v_sort";
 
 		String idItemsReview=base+expName+"\\allReview.txt";
 		String idVec=base+expName+"\\word_vector.txt";
-		String destIdAvgTagsFeature=base+"forSVM\\"+expName+"\\idTag_feature.txt";
+		String destIdAvgTagsFeature=base+"forSVM\\"+expName+"\\id_feature.txt";
 		ExtractData.extractUidAvgItemVecForSvm(idItemsReview, "\t\t", "\t", idVec, "\\s{1,}", destIdAvgTagsFeature, "\t");
 	}
 
@@ -433,9 +433,9 @@ public class TagExp {
 	{
 		String base="F:\\ExpData\\DataIntegate\\source\\nne\\zps-400-expset\\extract\\selFtagNum3_-1\\";
 		String idFirsReview=base+"idFrisReview.txt";
-		String idVec=base+"idFris_forW2v_vector.txt";
+		String idVec=base+"idFris_sort_forW2v_vector.txt";
 
-		String expName="id_w2v_cluster(step"+clusterStep+")";
+		String expName="id_w2v_sort_cluster(step"+clusterStep+")";
 		String destIdClusterFriReview=base+expName+"\\allReview.txt";
 		String destClusterFriVec=base+expName+"\\word_vector.txt";
 
@@ -528,6 +528,14 @@ public class TagExp {
 		String destSim2IdFrisReview=base+selSimFriDir+sim1Name+"_"+sim2Name+"\\idFrisReview.txt";
 		ExtractData.extractIdFrisReviewByTopn(destSim1IdFrisReview, "\t\t", "\t", sim2Vec, "\\s{1,}", destSim2IdFrisReview, topN2);
 	}
+	public static void generateSortFris() throws IOException
+	{
+		String base="F:\\ExpData\\DataIntegate\\source\\nne\\zps-400-expset\\extract\\selFtagNum3_-1\\";
+		String idFris=base+"uid_fids.txt";
+		String sortIdFris=base+"idFris_sort_forW2v.txt";
+		
+		ExtractData.generateSortIds(idFris, "\t", sortIdFris, "\t");
+	}
 	//	public static void generateSimFriAuto() throws IOException
 	//	{
 	//		String base="F:\\ExpData\\DataIntegate\\source\\nne\\zps-400-expset\\extract\\selFtagNum3_-1\\";
@@ -619,7 +627,7 @@ public class TagExp {
 		//concateEmbeding("Tag-friTagVec","Tag-tagVecElementMultiInUserSpace");
 
 		//generateUidTagsAddFriTgsReviews();
-		//generateUidIdAddFriIdsReviews();
+	//generateUidIdAddFriIdsReviews();
 
 		//extractUidFrisForW2v();
 		//generaterFeatureForSvm();
@@ -633,7 +641,13 @@ public class TagExp {
 	public static void main(String[] args) throws Exception 
 	{
 		
-		
+		//generateSortFris();
+		//generateClusterFri(10);
+		//generateAvgItemFeatureForSVM();
+//		ExtractData.concateUidClusterAndUidTags("F:\\ExpData\\DataFromOther\\crawl\\extractFromAll\\uid-400\\selFTnum3_-1\\idFris_sort_forW2v_vector_cluster.txt", "\\s{1,}",
+//				"F:\\ExpData\\DataIntegate\\source\\nne\\extractDataFromZps\\allUidTags.txt", "\t",
+//				"F:\\ExpData\\DataFromOther\\crawl\\extractFromAll\\uid-400\\selFTnum3_-1\\idFris_sort_forW2v_vector_cluster.tag.txt");
+//	
 	}
 
 }

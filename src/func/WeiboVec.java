@@ -28,7 +28,7 @@ public class WeiboVec {
 				continue;
 			}
 			String[] elms=line.split(seperater);
-			String word=elms[0];
+			String word=elms[0].trim();
 			List<Double> vec=new ArrayList<Double>();
 			for(int i=1;i<elms.length;++i){
 				vec.add(Double.parseDouble(elms[i]));
@@ -58,7 +58,7 @@ public class WeiboVec {
 			List<Double> avg=new ArrayList<Double>();
 			int totalnum=0;
 			for(int i=1;i<elms.length;++i){
-				List<Double> vec=this.wordVecMatrix.get(elms[i]);
+				List<Double> vec=this.wordVecMatrix.get(elms[i].trim());
 				if(vec!=null){
 					if(avg.size()==0){
 						for(int k=0;k<vec.size();++k){
@@ -72,7 +72,7 @@ public class WeiboVec {
 					}
 					++totalnum;
 				}else{
-					System.out.println(id+" "+i+" elment "+elms[i] +" no vec");
+					System.out.println(id+" "+i+"th elment "+elms[i] +" no vec");
 				}
 			}
 

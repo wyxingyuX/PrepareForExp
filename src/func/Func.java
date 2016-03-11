@@ -22,10 +22,12 @@ import java.util.Random;
 import net.sf.json.JSONObject;
 import utils.FileTool;
 import utils.IO;
+import utils.MyToolKit;
 
 public class Func {
 	static String url="";
 	static String email="";
+
 	public static void json2Weibos(String jsonDataDir,String weibosFilePath,String seperater) throws IOException{
 		File dir=new File(jsonDataDir);
 		File[] files=dir.listFiles();
@@ -64,7 +66,7 @@ public class Func {
 		writer2.close();
 	}
 
-	public static void mergeUidAnfWords(String uid,String words,String dest,String seperater) throws IOException{
+	public static void mergeUidAndWords(String uid,String words,String dest,String seperater) throws IOException{
 		PrintWriter writer=new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dest),"utf-8")));
 		BufferedReader readerUid=new BufferedReader(new InputStreamReader(new FileInputStream(uid),"utf-8"));
 		BufferedReader readerWord=new BufferedReader(new InputStreamReader(new FileInputStream(words),"utf-8"));
@@ -91,18 +93,20 @@ public class Func {
 		writer.close();
 	}
 
-	public static void uidWeibos2uidWeiboId(String uidWeibos,String uidWeibosSeperater,String uidWeiboIds,String uidWeiboIdsSeperater) throws IOException{
+	public static void uidWeibos2uidWeiboId(String uidWeibos,String uidWeibosSeperater,String uidWeiboIds,String uidWeiboIdsSeperater,String weiboIdAndWeibos) throws IOException{
 		BufferedReader reader=FileTool.getBufferedReaderFromFile(uidWeibos);
 		PrintWriter uidWeiboIdsWriter=FileTool.getPrintWriterForFile(uidWeiboIds);
-		PrintWriter weiboIdAndWeibosWriter=FileTool.getPrintWriterForFile(FileTool.getParentPath(uidWeiboIds)+"\\weiboIdAndWeibos.txt");
+		//PrintWriter weiboIdAndWeibosWriter=FileTool.getPrintWriterForFile(FileTool.getParentPath(uidWeiboIds)+"\\weiboIdAndWeibos.txt");
+		PrintWriter weiboIdAndWeibosWriter=FileTool.getPrintWriterForFile(weiboIdAndWeibos);
 
+		
 		String line="";
 		while((line=reader.readLine())!=null){
 			String[] elms=line.split(uidWeibosSeperater);
 			String uid=elms[0].trim();
 			uidWeiboIdsWriter.write(uid);
 			for(int i=1;i<elms.length;++i){
-				String weiboId=uid+""+i;
+				String weiboId=uid+"_"+i;
 				uidWeiboIdsWriter.write(uidWeiboIdsSeperater+weiboId);
 				weiboIdAndWeibosWriter.write(weiboId+uidWeiboIdsSeperater+elms[i]+"\r\n");
 			}
@@ -144,6 +148,36 @@ public class Func {
 		writer.close();
 
 	}
+	public static void uidWeiboId2ReviewFormV2(String allIdCate,String allIdCateSeperater,String uidWeiboIds,String uidWeiboIdsSeperater,
+			String reviewFormFile,String seperater,int weiboIdsNum) throws IOException
+	{
+		Map<String,String> idLabelMap=IO.readKeyValueMap(allIdCate, allIdCateSeperater);
+		BufferedReader reader=FileTool.getBufferedReaderFromFile(uidWeiboIds);
+		PrintWriter writer=FileTool.getPrintWriterForFile(reviewFormFile);
+		String line="";
+		while((line=reader.readLine())!=null){
+			String[] elms=line.split(uidWeiboIdsSeperater);
+			String uid=elms[0].trim();
+			String label=idLabelMap.get(uid);
+			int weiboIdsSize=elms.length-1;
+			if(weiboIdsNum>0&&weiboIdsNum<elms.length-1){
+				weiboIdsSize=weiboIdsNum;
+			}
+			StringBuilder stb=new StringBuilder();
+			for(int i=0;i<weiboIdsSize;++i){
+				if(i!=weiboIdsSize-1){
+					stb.append(elms[i+1]+uidWeiboIdsSeperater);
+				}else{
+					stb.append(elms[i+1]);
+				}
+			}
+			String weiboIds=stb.toString();
+			writer.write(uid+seperater+"Weibos"+seperater+label+seperater+weiboIds);
+			writer.write("\r\n");
+		}
+		writer.close();
+	}
+	
 	public static float random(Random r,float min,float max){
 		return r.nextFloat()*(max-min)+min;
 	}
@@ -295,6 +329,7 @@ public class Func {
 			String uid=elms[0].trim();
 			String type=elms[1];
 			String label=elms[2];
+			
 			String weiboIds=elms[3];
 			String[] elmsWeiboId=weiboIds.split(seperater2);
 			StringBuilder stb=new StringBuilder();
@@ -308,7 +343,7 @@ public class Func {
 					stb.append(elmsWeiboId[i]+seperater2);
 				}
 			}
-			writer.write(uid+seperater2+stb.toString()+"\r\n");
+			writer.write(uid+seperater1+type+seperater1+label+seperater1+stb.toString()+"\r\n");
 		}
 		writer.close();
 	}

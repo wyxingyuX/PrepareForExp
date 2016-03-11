@@ -135,6 +135,19 @@ public class FileTool {
 		}
 		return stb.toString();
 	}
+	public static void copyFile2Dir(String srcFile,String destDir) throws Exception
+	{
+		File destF=new File(destDir+FileTool.getFileName(srcFile));
+		if(destF.exists())
+		{
+			System.out.println("File: "+destF.getAbsolutePath()+" have alrady exist, we will not copy srcFile to replace this destFile. ");
+		}
+		else
+		{
+			copy(srcFile,destDir+FileTool.getFileName(srcFile));
+		}
+
+	}
 	public static void copy(String srcFile,int startLineNum,int endLineNum,String destFile) throws IOException{
 		copy(new File(srcFile),startLineNum,endLineNum,new File(destFile));
 	}
@@ -155,7 +168,7 @@ public class FileTool {
 		writer.close();
 	}
 
-	public static void copy(String srcFile,String destFile) throws IOException, Exception{
+	public static void copy(String srcFile,String destFile) throws Exception{
 		copy(srcFile,1,FileTool.getFileLineNum(srcFile),destFile);
 	}
 	public static void appendFileA2FileB(String a,String b) throws IOException

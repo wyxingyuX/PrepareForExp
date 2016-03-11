@@ -1,5 +1,9 @@
 package utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import Jama.Matrix;
 
 public class MyMathTool {
@@ -55,6 +59,28 @@ public class MyMathTool {
 		}
 		len=Math.sqrt(len);
 		return len;
+	}
+	
+	public static List<Double> avgVec(List<String> words,Map<String,List<Double>> vecMat){
+		List<Double> avgVec=new ArrayList<Double>();
+		int count=0;
+		for(String word:words){
+			List<Double> vec=vecMat.get(word);
+			if(vec!=null){
+				for(int i=0;i<vec.size();++i){
+					if(avgVec.size()<vec.size()){
+						avgVec.add(vec.get(i));
+					}else{
+						avgVec.set(i, avgVec.get(i)+vec.get(i));
+					}
+				}
+				++count;
+			}
+		}
+		for(int i=0;i<avgVec.size();++i){
+			avgVec.set(i, avgVec.get(i)/(count*1.0));
+		}
+		return avgVec;
 	}
 
 

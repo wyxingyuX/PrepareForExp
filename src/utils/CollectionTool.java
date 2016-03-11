@@ -101,7 +101,16 @@ public class CollectionTool {
 		}
 		return subArry;
 	}
-
+	public static List<String> sortIDs(String[] ids)
+	{
+		List<String> il=new ArrayList<String>();
+		for(String i:ids)
+		{
+			il.add(i.trim());
+		}
+		Collections.sort(il);
+		return il;
+	}
 	
 	public static void main(String[] args) throws UnsupportedEncodingException, FileNotFoundException{
 //	 List<String> a=new ArrayList<String>();

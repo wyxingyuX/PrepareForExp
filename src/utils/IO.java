@@ -66,32 +66,32 @@ public class IO {
 		return idcateMap;
 	}
 
-	public static Map<String,List<String>> readUidTagsMapFromFile(String uidTags,String uidTagsSeperater) throws IOException
+	public static Map<String,List<String>> readKeyItemsMapFromFile(String keyItems,String keyItemsSeperater) throws IOException
 	{
-		Map<String,List<String>> uidTagsMap=new HashMap<String,List<String>>();
-		BufferedReader reader=FileTool.getBufferedReaderFromFile(uidTags);
+		Map<String,List<String>> keyItemsMap=new HashMap<String,List<String>>();
+		BufferedReader reader=FileTool.getBufferedReaderFromFile(keyItems);
 		String line="";
 		while((line=reader.readLine())!=null)
 		{
-			String[] elms=line.split(uidTagsSeperater);
+			String[] elms=line.split(keyItemsSeperater);
 			if(elms.length<=0)
 			{
 				continue;
 			}
-			String uid=elms[0].trim();
-			List<String> tags=uidTagsMap.get(uid);
-			if(tags==null)
+			String key=elms[0].trim();
+			List<String> items=keyItemsMap.get(key);
+			if(items==null)
 			{
-				tags=new LinkedList<String>();
+				items=new LinkedList<String>();
 
 			}
 			for(int i=1;i<elms.length;++i)
 			{
-				tags.add(elms[i]);
+				items.add(elms[i]);
 			}
-			uidTagsMap.put(uid, tags);
+			keyItemsMap.put(key, items);
 		}
-		return uidTagsMap;
+		return keyItemsMap;
 
 	}
 
@@ -278,15 +278,37 @@ public class IO {
 	
 
 	public static Set<String> readUids(String uids) throws IOException{
+		
+		return IO.readUids(uids,"\t");
+	}
+	public static Set<String> readUids(String uids,String uidSeperater) throws IOException{
 		BufferedReader reader=FileTool.getBufferedReaderFromFile(uids);
 		Set<String> ids=new HashSet<String>();
 		String line="";
 		while((line=reader.readLine())!=null){
-			String[] elms=line.split("\t");
+			String[] elms=line.split(uidSeperater);
 			String id=elms[0].trim();
 			ids.add(id);
 		}
 		return ids;
+	}
+	public static Set<String> readWeiboIdSetFromUidWeiboIds(String uidWeiboIds,String uidWeiboIdsSeperater) throws IOException
+	{
+		BufferedReader reader=FileTool.getBufferedReaderFromFile(uidWeiboIds);
+		Set<String> weiboIds=new HashSet<String>();
+		String line="";
+		while((line=reader.readLine())!=null){
+			if(line.equals(""))
+			{
+				continue;
+			}
+			String[] elms=line.split(uidWeiboIdsSeperater);
+			for(int i=1;i<elms.length;++i)
+			{
+				weiboIds.add(elms[i].trim());
+			}
+		}
+		return weiboIds;
 	}
 	
 	public static void readUidLabel(String uids,String label,Map<String,String> idLabelMap) throws IOException{
@@ -298,6 +320,48 @@ public class IO {
 			idLabelMap.put(id, label);
 		}
 	}
+	public static void writeWordVec(String word,List<Double> vec,String seperater,PrintWriter writer)
+	{
+		writeWordVecXTimes(word,vec,1.0f,seperater,writer);
+	}
+	public static void writeWordVecXTimes(String word,List<Double> vec,float times,String seperater,PrintWriter writer)
+	{
+		writer.write(word);
+		for(double d:vec)
+		{
+			writer.write(seperater+(d*times));
+		}
+		writer.write("\r\n");
+		writer.flush();
+	}
+	
+	public static Set<String> readIdSetFromReview(String idFrisReview,String itemSeperater,String innerSeperater) throws IOException
+	{
+		Set<String> idSet=new HashSet<String>();
+		BufferedReader reader=FileTool.getBufferedReaderFromFile(idFrisReview);
+		String line="";
+		while((line=reader.readLine())!=null)
+		{
+			if(line.equals(""))
+			{
+				continue;
+			}
+			String[] elms=line.split(itemSeperater);
+			String uid=elms[0].trim();
+			idSet.add(uid);
+			if(elms.length>3)
+			{
+				String[] fris=elms[3].split(innerSeperater);
+				for(String f:fris)
+				{
+					idSet.add(f.trim());
+				}
+			}
+		}
+		return idSet;
+		
+	}
+	
 
 
 }
